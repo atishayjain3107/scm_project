@@ -133,3 +133,103 @@ void main()
 	init();
 	mainmenu();
 }
+
+/////////////////////////////////////////////
+////DEFINITION OF UI FUNCTIONS///////////////
+/////////////////////////////////////////////
+
+void box(int x1,int y1,int x2,int y2)
+{
+	int i;
+	char ch='€';
+	window(1,1,80,25);
+	textcolor(BLACK);
+	for(i=x1;i<=x2;i++)
+	{
+		gotoxy(i,y1);
+		cout<<ch;
+		gotoxy(i,y2);
+		cout<<ch;
+	}
+	for(i=y1;i<=y2;i++)
+	{
+		gotoxy(x1,i);
+		cout<<ch;
+		gotoxy(x2,i);
+		cout<<ch;
+	}
+}
+
+void cursor(int x,int y, char* s)
+{
+	window(x,y,20+x,y);
+	textbackground(MAGENTA);
+	clrscr();
+	gotoxy(x+1,y);
+	puts(s);
+}
+
+void setNum(int x,int y, char* s,int n,COLORS c = BLUE,int size=24)
+{
+	window(x,y,x+size,y);
+	textbackground(c);
+	textcolor(BLACK);
+	clrscr();
+	gotoxy(x+1,y);
+	puts(s);
+	window(x+10,y,x+30,y);
+	gotoxy(x+10,y);
+	cout<<n;
+}
+
+void setText(int x,int y, char* s,COLORS c = BLUE,int size=24)
+{
+	window(x,y,x+size,y);
+	textbackground(c);
+	textcolor(BLACK);
+	clrscr();
+	gotoxy(x+1,y);
+	puts(s);
+}
+
+long getNum(int x, int y, char* s,COLORS c = BLUE)
+{
+	long n;
+	window(x,y,30+x,y);
+	textbackground(c);
+	clrscr();
+	gotoxy(x+1,y);
+	puts(s);
+	window(x+22,y,x+50,y);
+	gotoxy(x+22,y);
+	cin>>n;
+	return n;
+
+}
+
+void getText(int x, int y, char* s,char str[],COLORS c = BLUE)
+{
+	window(x,y,30+x,y);
+	textbackground(c);
+	clrscr();
+	gotoxy(x+1,y);
+	puts(s);
+	window(x+22,y,x+50,y);
+	gotoxy(x+22,y);
+	gets(str);
+}
+
+//makes the plus sign
+void plus(char* s)
+{
+	window(8,19,32,21);
+	textbackground(RED);
+	clrscr();
+	window(17,17,23,23);
+	textbackground(RED);
+	clrscr();
+	window(14,20,24,20);
+	textcolor(WHITE);
+	setText(14,20,s,RED,18);
+}
+
