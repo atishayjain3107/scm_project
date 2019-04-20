@@ -204,7 +204,6 @@ long getNum(int x, int y, char* s,COLORS c = BLUE)
 	gotoxy(x+22,y);
 	cin>>n;
 	return n;
-
 }
 
 void getText(int x, int y, char* s,char str[],COLORS c = BLUE)
@@ -232,6 +231,7 @@ void plus(char* s)
 	textcolor(WHITE);
 	setText(14,20,s,RED,18);
 }
+
 void clear()
 {
 	window(5,5,75,15);
@@ -239,5 +239,17 @@ void clear()
 	textbackground(BLUE);
 	clrscr();
 	box(5,5,75,15);
+}
+
+void console(char* s)
+{
+	window(40,18,75,22);
+	textcolor(WHITE);
+	textbackground(BLACK);
+	clrscr();
+	box(40,18,75,22);
+	window(45,20,75,20);
+	gotoxy(45,20);
+	puts(s);
 }
 
