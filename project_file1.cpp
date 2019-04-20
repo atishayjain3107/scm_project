@@ -232,4 +232,12 @@ void plus(char* s)
 	textcolor(WHITE);
 	setText(14,20,s,RED,18);
 }
+void clear()
+{
+	window(5,5,75,15);
+	textcolor(WHITE);
+	textbackground(BLUE);
+	clrscr();
+	box(5,5,75,15);
+}
 
