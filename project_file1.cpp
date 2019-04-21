@@ -251,5 +251,245 @@ void console(char* s)
 	window(45,20,75,20);
 	gotoxy(45,20);
 	puts(s);
+} void mainmenu()
+{
+	//options
+	int cr=0,tX=6,tY=7,flag=0;
+	char ch,option[4][30] = {"Student Database","Medical Checkup","Visitor Entry/Report","Quit"};
+	do
+	{
+		if(flag==0)
+		{
+			cr=0;
+			tX=6;
+			tY=7;
+			console("");
+			clear();
+			plus("MAIN");
+			for(int i=0;i<4;i++)
+				setText(tX,tY+i,option[i]);
+			cursor(tX,tY,option[cr]);
+			flag=1;
+		}
+		ch = getch();
+		switch(ch)
+		{
+			case 80:setText(tX,tY,option[cr]); //down key
+				if(cr==3)
+				{
+					cr=0;
+					tY-=3;
+				}
+				else
+				{
+					cr++;
+					tY++;
+				}
+				cursor(tX,tY,option[cr]);
+				break;
+			 case 72:setText(tX,tY,option[cr]);  //up key
+				 if(cr==0)
+				 {
+					cr=3;
+					tY+=3;
+				 }
+				 else
+				 {
+					cr--;
+					tY--;
+				 }
+				 cursor(tX,tY,option[cr]);
+				 break;
+			 case 13:switch(cr+1)
+				 {
+					case 1: studentDB();
+						flag=0;
+						break;
+					case 2: MedicalCheckup();
+						flag=0;
+						break;
+					case 3: Report();
+						flag=0;
+						break;
+					case 4: exit(0);
+				 }
+		}
+	} while(1);
+}void studentDB()
+{
+	plus("Student DB");
+	int cr=0,tX=6,tY=7,flag=0;
+	char ch,option[6][30] = {"Add Record","Delete Record","View All","Search Record","Modify Record","Go Back"};
+	do
+	{
+		if(flag==0)
+		{
+			console("");
+			cr=0;
+			tX=6;
+			tY=7;
+			clear();
+			for(int i=0;i<6;i++)
+				setText(tX,tY+i,option[cr+i]);
+			cursor(tX,tY,option[cr]);
+			flag=1;
+		}
+		ch=getch();
+		switch(ch)
+		{
+			case 80:setText(tX,tY,option[cr]); //down key
+				if(cr==5)
+				{
+					cr=0;
+					tY-=5;
+				}
+				else
+				{
+					cr++;
+					tY++;
+				}
+				cursor(tX,tY,option[cr]);
+				break;
+			case 72:setText(tX,tY,option[cr]);  //up key
+				if(cr==0)
+				{
+					cr=5;
+					tY+=5;
+				}
+				else
+				{
+					cr--;
+					tY--;
+				}
+				cursor(tX,tY,option[cr]);
+				break;
+			case 13:switch(cr+1)
+				{
+					case 1: clear();
+						SD_addRecord();
+						flag=0;
+						break;
+					case 2: SD_deleteRecord();
+						flag=0;
+						break;
+					case 3: SD_viewAll();
+						flag=0;
+						break;
+					case 4: SD_searchRecord();
+						flag=0;
+						break;
+					case 5: SD_modifyRecord();
+						flag=0;
+						break;
+					case 6: ch=27;
+				 }
+		}
+	} while(ch!=27);
+}void student:: inputData()
+{
+	int tX=6, tY=6;
+	char list[7][50] = {"2.Name:","3.Blood Group:","4.Address:","5.Father's Name:","6.Father's Phone No.:","7.Mother's Name:","8.Mother's Phone No.:"};
+	char str[50];
+	admno = getNum(tX,tY++,"1.Admno: ");
+	for(int i=0;i<7;i++)
+	{
+		getText(tX,tY+i,list[i],str);
+		strcpy(data[i],str);
+	}
 }
 
+void student:: displayData(int tX=6)
+{
+	int tY=6;
+	char list[7][50] = {"2.Name:","3.Blood Group:","4.Address:","5.Father's Name:","6.Father's Phone No.:","7.Mother's Name:","8.Mother's Phone No.:"};
+	char* str;
+	setNum(tX,tY++,"1.Admno:",admno,BLUE,30);
+	for(int i=0;i<7;i++)
+	{
+		str = list[i];
+		strcat(str,data[i]);
+		setText(tX,tY+i,str,BLUE,30);
+	}
+} //adding normal data for student
+void SD_addRecord()
+{
+	fstream f1;
+	char ch;
+	f1.open("student.dat",ios::app|ios::binary);
+	while(1)
+	{
+		s.inputData();
+		f1.write((char*)&s,sizeof(s));
+		window(9,15,30,15);
+		cout<<"Press N to stop entering-";
+		cin>>ch;
+		if(ch=='n'|| ch=='N')
+			break;
+		clear();
+	}
+	f1.close();
+}
+
+//display function for normal student
+void SD_viewAll()
+{
+	fstream f1;
+	f1.open("student.dat",ios::in|ios::binary);
+	if(!f1)
+	{
+		console("ERROR");
+		getch();
+		return;
+	}
+	while(!f1.eof())
+	{
+		f1.read((char*)&s,sizeof(s));
+		if(f1.eof())
+			break;
+		s.displayData();
+		getch();
+	}
+	f1.close();
+}
+//deleting data for normal student by admission number
+void SD_deleteRecord()
+{
+	fstream f1,f2;
+	int flag=0;
+	long admn;
+	f1.open("student.dat",ios::in|ios::binary);
+	f2.open("temp.dat",ios::out|ios::binary);
+	if(!f1)
+	{
+		console("ERROR");
+		getch();
+		return;
+	}
+	clear();
+	admn = getNum(8,8,"Admno -> ");
+	while(!f1.eof())
+	{
+		f1.read((char*)&s,sizeof(s));
+		if(f1.eof())
+			break;
+		if(s.getAdmno()==admn)
+		{
+			flag=1;
+			continue;
+		}
+
+		else
+		{
+			f2.write((char*)&s,sizeof(s));
+		}
+	}
+	f2.close();
+	f1.close();
+	remove("student.dat");
+	rename("temp.dat","student.dat");
+	if(flag==1)
+		console("Deleted!");
+	else
+		console("NotFound!");
+	getch();
+}
