@@ -410,4 +410,45 @@ void student:: displayData(int tX=6)
 		strcat(str,data[i]);
 		setText(tX,tY+i,str,BLUE,30);
 	}
+} //adding normal data for student
+void SD_addRecord()
+{
+	fstream f1;
+	char ch;
+	f1.open("student.dat",ios::app|ios::binary);
+	while(1)
+	{
+		s.inputData();
+		f1.write((char*)&s,sizeof(s));
+		window(9,15,30,15);
+		cout<<"Press N to stop entering-";
+		cin>>ch;
+		if(ch=='n'|| ch=='N')
+			break;
+		clear();
+	}
+	f1.close();
 }
+
+//display function for normal student
+void SD_viewAll()
+{
+	fstream f1;
+	f1.open("student.dat",ios::in|ios::binary);
+	if(!f1)
+	{
+		console("ERROR");
+		getch();
+		return;
+	}
+	while(!f1.eof())
+	{
+		f1.read((char*)&s,sizeof(s));
+		if(f1.eof())
+			break;
+		s.displayData();
+		getch();
+	}
+	f1.close();
+}
+
