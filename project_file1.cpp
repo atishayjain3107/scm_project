@@ -385,4 +385,29 @@ void console(char* s)
 				 }
 		}
 	} while(ch!=27);
+}void student:: inputData()
+{
+	int tX=6, tY=6;
+	char list[7][50] = {"2.Name:","3.Blood Group:","4.Address:","5.Father's Name:","6.Father's Phone No.:","7.Mother's Name:","8.Mother's Phone No.:"};
+	char str[50];
+	admno = getNum(tX,tY++,"1.Admno: ");
+	for(int i=0;i<7;i++)
+	{
+		getText(tX,tY+i,list[i],str);
+		strcpy(data[i],str);
+	}
+}
+
+void student:: displayData(int tX=6)
+{
+	int tY=6;
+	char list[7][50] = {"2.Name:","3.Blood Group:","4.Address:","5.Father's Name:","6.Father's Phone No.:","7.Mother's Name:","8.Mother's Phone No.:"};
+	char* str;
+	setNum(tX,tY++,"1.Admno:",admno,BLUE,30);
+	for(int i=0;i<7;i++)
+	{
+		str = list[i];
+		strcat(str,data[i]);
+		setText(tX,tY+i,str,BLUE,30);
+	}
 }
