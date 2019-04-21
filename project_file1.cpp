@@ -251,5 +251,68 @@ void console(char* s)
 	window(45,20,75,20);
 	gotoxy(45,20);
 	puts(s);
+} void mainmenu()
+{
+	//options
+	int cr=0,tX=6,tY=7,flag=0;
+	char ch,option[4][30] = {"Student Database","Medical Checkup","Visitor Entry/Report","Quit"};
+	do
+	{
+		if(flag==0)
+		{
+			cr=0;
+			tX=6;
+			tY=7;
+			console("");
+			clear();
+			plus("MAIN");
+			for(int i=0;i<4;i++)
+				setText(tX,tY+i,option[i]);
+			cursor(tX,tY,option[cr]);
+			flag=1;
+		}
+		ch = getch();
+		switch(ch)
+		{
+			case 80:setText(tX,tY,option[cr]); //down key
+				if(cr==3)
+				{
+					cr=0;
+					tY-=3;
+				}
+				else
+				{
+					cr++;
+					tY++;
+				}
+				cursor(tX,tY,option[cr]);
+				break;
+			 case 72:setText(tX,tY,option[cr]);  //up key
+				 if(cr==0)
+				 {
+					cr=3;
+					tY+=3;
+				 }
+				 else
+				 {
+					cr--;
+					tY--;
+				 }
+				 cursor(tX,tY,option[cr]);
+				 break;
+			 case 13:switch(cr+1)
+				 {
+					case 1: studentDB();
+						flag=0;
+						break;
+					case 2: MedicalCheckup();
+						flag=0;
+						break;
+					case 3: Report();
+						flag=0;
+						break;
+					case 4: exit(0);
+				 }
+		}
+	} while(1);
 }
-
