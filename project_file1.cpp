@@ -522,3 +522,41 @@ void SD_searchRecord()
 	f.close();
 }
 
+//modifying existing normal student data
+void SD_modifyRecord()
+{
+	clear();
+	fstream f1,f2;
+	int admn;
+	f1.open("student.dat",ios::in|ios::binary);
+	f2.open("temp.dat",ios::out|ios::binary);
+	if(!f1)
+	{
+		console("ERROR");
+		getch();
+		return;
+	}
+	admn=getNum(8,8,"Admno-> ");
+	while(!f1.eof())
+	{
+		f1.read((char*)&s,sizeof(s));
+		if(f1.eof())
+			break;
+		if(s.getAdmno()==admn)
+		{
+			clear();
+			s.inputData();
+			f2.write((char*)&s,sizeof(s));
+		}
+		else
+		{
+			f2.write((char*)&s,sizeof(s));
+		}
+	}
+	f1.close();
+	f2.close();
+	remove("student.dat");
+	rename("temp.dat","student.dat");
+	console("Updated");
+	getch();
+}
