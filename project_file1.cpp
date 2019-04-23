@@ -559,4 +559,76 @@ void SD_modifyRecord()
 	rename("temp.dat","student.dat");
 	console("Updated");
 	getch();
+
+void MedicalCheckup()
+{
+	int cr,tX,tY,flag=0;
+	long admn;
+	char ch,option[4][50] = {"Add new Record","Search Record","View All Records","Go Back"};
+	do
+	{
+		if(flag==0)
+		{
+			init();
+			console("");
+			cr=0;
+			tX=6;
+			tY=7;
+			plus("MEDICAL CHECKUP");
+			clear();
+			for(int i=0;i<4;i++)
+				setText(tX,tY+i,option[cr+i]);
+			cursor(tX,tY,option[cr]);
+			flag=1;
+		}
+		ch=getch();
+		switch(ch)
+		{
+			case 80:setText(tX,tY,option[cr]); //down key
+				if(cr==3)
+				{
+					cr=0;
+					tY-=3;
+				}
+				else
+				{
+					cr++;
+					tY++;
+				}
+				cursor(tX,tY,option[cr]);
+				break;
+			case 72:setText(tX,tY,option[cr]);  //up key
+				if(cr==0)
+				{
+					cr=3;
+					tY+=3;
+				}
+				else
+				{
+					cr--;
+					tY--;
+				}
+				cursor(tX,tY,option[cr]);
+				break;
+			case 13:switch(cr+1)
+				{
+					case 1: init();
+						MC_addRecord();
+						flag=0;
+						break;
+					case 2: init();
+						setText(5,5,"Enter Admno. to search -> ",WHITE);
+						admn = getNum(5,6,"",WHITE);
+						MC_searchRecord(admn);
+						flag=0;
+						break;
+					case 3: init();
+						MC_viewAll();
+						flag=0;
+						break;
+					case 4: ch=27;
+				 }
+		}
+	} while(ch!=27);
+}
 }
