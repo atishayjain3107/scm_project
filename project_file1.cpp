@@ -673,3 +673,70 @@ void checkUp:: inputData()
 	curDate(date,month,year);
 	init();
 }
+void MC_addRecord()
+{
+	fstream f1;
+	char ch;
+	f1.open("checkup.dat",ios::app|ios::binary);
+	if(!f1)
+	{
+		console("ERROR");
+		getch();
+		return;
+	}
+	while(1)
+	{
+		c.inputData();
+		f1.write((char*)&c,sizeof(c));
+		init();
+		setText(5,5,"Press N to stop entering data and ",WHITE);
+		setText(5,6,"any other key to continue entering data",WHITE);
+		window(5,7,10,7);
+		cin>>ch;
+		if(ch=='n'|| ch=='N')
+			break;
+	}
+		f1.close();
+}
+
+void MC_searchRecord(long admn)
+{
+	init();
+	fstream f1,f2;
+	int f=0;//flag
+	f1.open("checkup.dat",ios::in|ios::binary);
+	f2.open("student.dat",ios::in|ios::binary);
+	if(!f1 || !f2)
+	{
+		console("ERROR");
+		getch();
+		exit(0);
+	}
+	while(!f2.eof())
+	{
+		f2.read((char*)&s,sizeof(s));
+		if(f2.eof())
+			break;
+		if(s.getAdmno()==admn)
+		{
+			box(44,5,76,14);
+			s.displayData(45);
+			++f;
+		}
+	}
+	while(!f1.eof())
+	{
+		f1.read((char*)&c,sizeof(c));
+		if(f1.eof())
+			break;
+		if(c.getAdmno()==admn)
+		{
+			box(5,5,25,14);
+			c.displayData();
+			getch();
+		}
+	}
+
+	f1.close();
+	f2.close();
+}
