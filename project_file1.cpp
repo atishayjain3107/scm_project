@@ -684,3 +684,142 @@ void R_addRecord() //disp mech
 		setText(5,5,"Press N to stop entering data and ",WHITE);
 		setText(5,6,"any other key to continue entering data",WHITE);
 		window(5,7,10,7);
+		cin>>ch;
+		if(ch=='n'|| ch=='N')
+			break;
+	}
+		f1.close();
+}
+
+void R_searchRecord(long admn) //disp mech
+{
+	fstream f1;
+	int f=0;//flag
+	f1.open("report.dat",ios::in|ios::binary);
+	if(!f1)
+	{
+		cout<<"ERROR";
+		getch();
+		return;
+	}
+	while(!f1.eof())
+	{
+		f1.read((char*)&rep,sizeof(rep));
+		if(f1.eof())
+			break;
+		if(rep.getAdmno()==admn)
+		{
+			rep.displayData();
+			++f;
+		}
+	}
+	f1.close();
+       if(f==0)
+		cout<<"No record for this student is stored";
+}
+
+void view_date(int sdate, int smonth, int syear,int edate, int emonth, int eyear) //sdate,smonth,syear -> starting date
+//view reports on the basis of date
+{							       //edate,emonth,eyear -> end date
+	init();
+	fstream f1;
+	int d,m,y,f=0;//f is flag
+	f1.open("report.dat",ios::in|ios::binary);
+	if(!f1)
+	{
+		console("ERROR");
+		getch();
+		return;
+	}
+	while(!f1.eof())
+	{
+		f1.read((char*)&rep,sizeof(rep));
+		rep.getDate(d,m,y);// d,m,y are date month and year stored in the record
+		if(f1.eof())
+			break;
+		if(y<syear || y>eyear)
+			continue;
+		else if((y==syear&&m<smonth) || (y==eyear&&m>emonth))
+			continue;
+		else if((y==syear&&m==smonth&&d<sdate) || (y==eyear&&m==emonth&&d>edate))
+			continue;
+		else
+		{
+			rep.displayData();
+			getch();
+			f++;
+		}
+	}
+	f1.close();
+	if(f==0)
+		cout<<"No record stored for given dates";
+}
+
+void view_month(int mon)//mon: number of months of record required from current date
+//view records on the basis of months
+{
+	init();
+	fstream f1;
+	int date_beg,month_beg,year_beg,d,m,y,date,month,year;
+	f1.open("report.dat",ios::in|ios::binary);
+	if(!f1)
+	{
+		cout<<"ERROR";
+		getch();
+		return;
+	}
+	curDate(date,month,year);
+	while(!f1.eof())
+	{
+		if(mon<=month)
+		{
+			date_beg=date;
+			month_beg=month-mon;
+			year_beg=year;
+			f1.read((char*)&rep,sizeof(rep));
+			if(f1.eof())
+				break;
+			rep.getDate(d,m,y);
+			if(y<year_beg)
+				continue;
+			else if((y==year_beg&&m<month_beg))
+				continue;
+			else if((y==year_beg&&m==month_beg&&d<date_beg))
+				continue;
+			else
+				rep.displayData();
+		}
+		if(mon>month)
+		{
+			date_beg=date;
+			month_beg=12-(mon-month)+1;
+			year_beg=year-1;
+			f1.read((char*)&rep,sizeof(rep));
+			if(f1.eof())
+				break;
+			rep.getDate(d,m,y);
+			if(y<year_beg)
+				continue;
+			else if((y==year_beg&&m<month_beg))
+				continue;
+			else if((y==year_beg&&m==month_beg&&d<date_beg))
+				continue;
+			else
+				rep.displayData();
+		}
+	}
+}
+
+void init()
+{
+	window(1,1,80,25);
+	textbackground(BLACK);
+	clrscr();
+	window(1,1,80,24);
+	textcolor(BLACK);
+	textbackground(WHITE);
+	clrscr();A
+	box(1,1,80,24);
+	gotoxy(27,1);
+	cout<<"AAROGYA :: MEDICAL EXPERT";
+}
