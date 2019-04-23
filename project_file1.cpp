@@ -493,6 +493,336 @@ void SD_deleteRecord()
 	else
 		console("NotFound!");
 	getch();
+
+}
+}
+
+	f1.close();
+	f2.close();
+}
+
+void MC_viewAll()
+{
+	fstream f1;
+	f1.open("checkup.dat",ios::in|ios::binary);
+	if(!f1)
+	{
+		console("ERROR");
+		getch();
+		return;
+	}
+	while(!f1.eof())
+	{
+		f1.read((char*)&c,sizeof(c));
+		if(f1.eof())
+			break;
+		c.displayData();
+		getch();
+		init();
+	}
+	f1.close();
+
+}
+
+//////////////////////////////////////////////
+//////////VISITOR ENTRY AND REPORT////////////
+//////////////////////////////////////////////
+
+void Report()
+{
+	int cr,tX,tY,flag=0;
+	int choice,ch2,smonth,sdate,syear,emonth,edate,eyear;
+	long admn;
+	char ch,option[4][50] = {"Add New Visitor Entry","Get Visit Record","Get visitor reports","Go Back"};
+	do
+		{
+		if(flag==0)
+		{
+			init();
+			console("");
+			cr=0;
+			tX=6;
+			tY=7;
+			plus("VISITOR ENTRY");
+			clear();
+			for(int i=0;i<4;i++)
+				setText(tX,tY+i,option[cr+i]);
+			cursor(tX,tY,option[cr]);
+			flag=1;
+		}
+		ch=getch();
+		switch(ch)
+		{
+			case 80:setText(tX,tY,option[cr]); //down key
+				if(cr==3)
+				{
+					cr=0;
+					tY-=3;
+				}
+				else
+				{
+					cr++;
+					tY++;
+				}
+				cursor(tX,tY,option[cr]);
+				break;
+			case 72:setText(tX,tY,option[cr]);  //up key
+				if(cr==0)
+				{
+					cr=3;
+					tY+=3;
+				}
+				else
+				{
+					cr--;
+					tY--;
+				}
+				cursor(tX,tY,option[cr]);
+				break;
+			case 13:switch(cr+1)
+				{
+					case 1: init();
+						R_addRecord();
+						flag=0;
+						break;
+						case 2: init();
+						setText(5,5,"Enter Admno. to search -> ",WHITE);
+						admn = getNum(5,6,"",WHITE);
+						R_searchRecord(admn);
+						flag=0;
+						break;
+					case 3: init();
+						int tX=5,tY=5;
+						setText(tX,tY++,"Press 1 to get reports between two dates",WHITE);
+						setText(tX,tY++,"Press 2 get reports for past 3 months",WHITE);
+						setText(tX,tY++,"Press 3 to get repots for past 6 months",WHITE);
+						window(tX,tY,tX+20,tY);
+						gotoxy(tX,tY);
+						cin>>ch2;
+						if(ch2==1)
+						{
+							tX=5;
+							tY=5;
+							line2:
+							console("");
+							init();
+							setText(tX,tY++,"Enter date from when reports are required -> ",WHITE);
+							sdate = getNum(tX,tY++,"",WHITE);
+							setText(tX,tY++,"Enter month from when reports are required -> ",WHITE);
+							smonth = getNum(tX,tY++,"",WHITE);
+							setText(tX,tY++,"Enter year from when reports are required -> ",WHITE);
+							syear = getNum(tX,tY++,"",WHITE);
+							setText(tX,tY++,"Enter date till when reports are required -> ",WHITE);
+							edate = getNum(tX,tY++,"",WHITE);
+							setText(tX,tY++,"Enter month till when reports are required -> ",WHITE);
+							emonth = getNum(tX,tY++,"",WHITE);
+							setText(tX,tY++,"Enter year till when reports are required -> ",WHITE);
+							eyear = getNum(tX,tY++,"",WHITE);
+							if(sdate>31 || smonth>12 || edate>31 || emonth>12 || sdate<1 || smonth<1 || edate<1 || emonth<1)
+							{
+								console("Enter dates correctly");
+								goto line2;
+							}
+							init();
+							view_date(sdate,smonth,syear,edate,emonth,eyear);
+						}
+						else if(ch2==2)
+						{
+							view_month(3);
+						}
+						else if(ch2==3)
+						{
+							view_month(6);
+						}
+						flag=0;
+						break;
+					case 4: ch=27;
+				 }
+		}
+	} while(ch!=27);
+}
+
+void report:: displayData()
+{
+	init();
+	window(6,6,26,6);
+	cout<<"Admission num-> "<<admNo;
+	window(6,7,26,7);
+	gotoxy(6,7);
+	cout<<date<<"-"<<month<<"-"<<year<<"\t";
+	setText(6,8,res,WHITE);
+	getch();
+}
+
+void report:: inputData()
+{
+	init();
+	admNo = getNum(6,6,"Enter admission num-> ",WHITE);
+	setText(6,7,"Remarks/Reason (under 40 characters) -> ",WHITE);
+	getText(6,8,"",res,WHITE);
+	curDate(date,month,year);
+}
+
+void curDate(int &date, int&month, int&year)
+{
+	time_t t=time(0); // time right now
+	struct tm *now=localtime(&t);
+	year=(now->tm_year+1900);
+	month=(now->tm_mon+1);
+	date=(now->tm_mday);
+}
+
+void R_addRecord() //disp mech
+{
+	fstream f1;
+	char ch;
+	f1.open("report.dat",ios::app|ios::binary);
+	while(1)
+	{
+		rep.inputData();
+		f1.write((char*)&rep,sizeof(rep));
+		init();
+		setText(5,5,"Press N to stop entering data and ",WHITE);
+		setText(5,6,"any other key to continue entering data",WHITE);
+		window(5,7,10,7);
+		cin>>ch;
+		if(ch=='n'|| ch=='N')
+			break;
+	}
+		f1.close();
+}
+
+void R_searchRecord(long admn) //disp mech
+{
+	fstream f1;
+	int f=0;//flag
+	f1.open("report.dat",ios::in|ios::binary);
+	if(!f1)
+	{
+		cout<<"ERROR";
+		getch();
+		return;
+	}
+	while(!f1.eof())
+	{
+		f1.read((char*)&rep,sizeof(rep));
+		if(f1.eof())
+			break;
+		if(rep.getAdmno()==admn)
+		{
+			rep.displayData();
+			++f;
+		}
+	}
+	f1.close();
+       if(f==0)
+		cout<<"No record for this student is stored";
+}
+
+void view_date(int sdate, int smonth, int syear,int edate, int emonth, int eyear) //sdate,smonth,syear -> starting date
+//view reports on the basis of date
+{							       //edate,emonth,eyear -> end date
+	init();
+	fstream f1;
+	int d,m,y,f=0;//f is flag
+	f1.open("report.dat",ios::in|ios::binary);
+	if(!f1)
+	{
+		console("ERROR");
+		getch();
+		return;
+	}
+	while(!f1.eof())
+	{
+		f1.read((char*)&rep,sizeof(rep));
+		rep.getDate(d,m,y);// d,m,y are date month and year stored in the record
+		if(f1.eof())
+			break;
+		if(y<syear || y>eyear)
+			continue;
+		else if((y==syear&&m<smonth) || (y==eyear&&m>emonth))
+			continue;
+		else if((y==syear&&m==smonth&&d<sdate) || (y==eyear&&m==emonth&&d>edate))
+			continue;
+		else
+		{
+			rep.displayData();
+			getch();
+			f++;
+		}
+	}
+	f1.close();
+	if(f==0)
+		cout<<"No record stored for given dates";
+}
+
+void view_month(int mon)//mon: number of months of record required from current date
+//view records on the basis of months
+{
+	init();
+	fstream f1;
+	int date_beg,month_beg,year_beg,d,m,y,date,month,year;
+	f1.open("report.dat",ios::in|ios::binary);
+	if(!f1)
+	{
+		cout<<"ERROR";
+		getch();
+		return;
+	}
+	curDate(date,month,year);
+	while(!f1.eof())
+	{
+		if(mon<=month)
+		{
+			date_beg=date;
+			month_beg=month-mon;
+			year_beg=year;
+			f1.read((char*)&rep,sizeof(rep));
+			if(f1.eof())
+				break;
+			rep.getDate(d,m,y);
+			if(y<year_beg)
+				continue;
+			else if((y==year_beg&&m<month_beg))
+				continue;
+			else if((y==year_beg&&m==month_beg&&d<date_beg))
+				continue;
+			else
+				rep.displayData();
+		}
+		if(mon>month)
+		{
+			date_beg=date;
+			month_beg=12-(mon-month)+1;
+			year_beg=year-1;
+			f1.read((char*)&rep,sizeof(rep));
+			if(f1.eof())
+				break;
+			rep.getDate(d,m,y);
+			if(y<year_beg)
+				continue;
+			else if((y==year_beg&&m<month_beg))
+				continue;
+			else if((y==year_beg&&m==month_beg&&d<date_beg))
+				continue;
+			else
+				rep.displayData();
+		}
+	}
+}
+
+void init()
+{
+	window(1,1,80,25);
+	textbackground(BLACK);
+	clrscr();
+	window(1,1,80,24);
+	textcolor(BLACK);
+	textbackground(WHITE);
+	clrscr();A
+	box(1,1,80,24);
+	gotoxy(27,1);
+	cout<<"AAROGYA :: MEDICAL EXPERT";
 }
 
 //search a student by admn
