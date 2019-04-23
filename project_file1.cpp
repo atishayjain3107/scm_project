@@ -534,3 +534,53 @@ void Report()
 	long admn;
 	char ch,option[4][50] = {"Add New Visitor Entry","Get Visit Record","Get visitor reports","Go Back"};
 	do
+		{
+		if(flag==0)
+		{
+			init();
+			console("");
+			cr=0;
+			tX=6;
+			tY=7;
+			plus("VISITOR ENTRY");
+			clear();
+			for(int i=0;i<4;i++)
+				setText(tX,tY+i,option[cr+i]);
+			cursor(tX,tY,option[cr]);
+			flag=1;
+		}
+		ch=getch();
+		switch(ch)
+		{
+			case 80:setText(tX,tY,option[cr]); //down key
+				if(cr==3)
+				{
+					cr=0;
+					tY-=3;
+				}
+				else
+				{
+					cr++;
+					tY++;
+				}
+				cursor(tX,tY,option[cr]);
+				break;
+			case 72:setText(tX,tY,option[cr]);  //up key
+				if(cr==0)
+				{
+					cr=3;
+					tY+=3;
+				}
+				else
+				{
+					cr--;
+					tY--;
+				}
+				cursor(tX,tY,option[cr]);
+				break;
+			case 13:switch(cr+1)
+				{
+					case 1: init();
+						R_addRecord();
+						flag=0;
+						break;
