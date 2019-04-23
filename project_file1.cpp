@@ -492,4 +492,45 @@ void SD_deleteRecord()
 	else
 		console("NotFound!");
 	getch();
+
 }
+}
+
+	f1.close();
+	f2.close();
+}
+
+void MC_viewAll()
+{
+	fstream f1;
+	f1.open("checkup.dat",ios::in|ios::binary);
+	if(!f1)
+	{
+		console("ERROR");
+		getch();
+		return;
+	}
+	while(!f1.eof())
+	{
+		f1.read((char*)&c,sizeof(c));
+		if(f1.eof())
+			break;
+		c.displayData();
+		getch();
+		init();
+	}
+	f1.close();
+
+}
+
+//////////////////////////////////////////////
+//////////VISITOR ENTRY AND REPORT////////////
+//////////////////////////////////////////////
+
+void Report()
+{
+	int cr,tX,tY,flag=0;
+	int choice,ch2,smonth,sdate,syear,emonth,edate,eyear;
+	long admn;
+	char ch,option[4][50] = {"Add New Visitor Entry","Get Visit Record","Get visitor reports","Go Back"};
+	do
