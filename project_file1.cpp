@@ -480,6 +480,7 @@ void SD_deleteRecord()
 
 		else
 		{
+	
 			f2.write((char*)&s,sizeof(s));
 		}
 	}
@@ -492,4 +493,250 @@ void SD_deleteRecord()
 	else
 		console("NotFound!");
 	getch();
+}
+
+//search a student by admn
+void SD_searchRecord()
+{
+	clear();
+	fstream f;
+	int admn;
+	f.open("student.dat",ios::in|ios::binary);
+	if(!f)
+	{
+		console("ERROR");
+		getch();
+		return;
+	}
+	admn = getNum(8,8,"Admno -> ");
+	while(!f.eof())
+	{
+		f.read((char*)&s, sizeof(s));
+		if(f.eof()) break;
+		if(s.getAdmno() == admn)
+		{
+			s.displayData();
+			getch();
+		}
+	}
+	f.close();
+}
+
+//modifying existing normal student data
+void SD_modifyRecord()
+{
+	clear();
+	fstream f1,f2;
+	int admn;
+	f1.open("student.dat",ios::in|ios::binary);
+	f2.open("temp.dat",ios::out|ios::binary);
+	if(!f1)
+	{
+		console("ERROR");
+		getch();
+		return;
+	}
+	admn=getNum(8,8,"Admno-> ");
+	while(!f1.eof())
+	{
+		f1.read((char*)&s,sizeof(s));
+		if(f1.eof())
+			break;
+		if(s.getAdmno()==admn)
+		{
+			clear();
+			s.inputData();
+			f2.write((char*)&s,sizeof(s));
+		}
+		else
+		{
+			f2.write((char*)&s,sizeof(s));
+		}
+	}
+	f1.close();
+	f2.close();
+	remove("student.dat");
+	rename("temp.dat","student.dat");
+	console("Updated");
+	getch();
+
+void MedicalCheckup()
+{
+	int cr,tX,tY,flag=0;
+	long admn;
+	char ch,option[4][50] = {"Add new Record","Search Record","View All Records","Go Back"};
+	do
+	{
+		if(flag==0)
+		{
+			init();
+			console("");
+			cr=0;
+			tX=6;
+			tY=7;
+			plus("MEDICAL CHECKUP");
+			clear();
+			for(int i=0;i<4;i++)
+				setText(tX,tY+i,option[cr+i]);
+			cursor(tX,tY,option[cr]);
+			flag=1;
+		}
+		ch=getch();
+		switch(ch)
+		{
+			case 80:setText(tX,tY,option[cr]); //down key
+				if(cr==3)
+				{
+					cr=0;
+					tY-=3;
+				}
+				else
+				{
+					cr++;
+					tY++;
+				}
+				cursor(tX,tY,option[cr]);
+				break;
+			case 72:setText(tX,tY,option[cr]);  //up key
+				if(cr==0)
+				{
+					cr=3;
+					tY+=3;
+				}
+				else
+				{
+					cr--;
+					tY--;
+				}
+				cursor(tX,tY,option[cr]);
+				break;
+			case 13:switch(cr+1)
+				{
+					case 1: init();
+						MC_addRecord();
+						flag=0;
+						break;
+					case 2: init();
+						setText(5,5,"Enter Admno. to search -> ",WHITE);
+						admn = getNum(5,6,"",WHITE);
+						MC_searchRecord(admn);
+						flag=0;
+						break;
+					case 3: init();
+						MC_viewAll();
+						flag=0;
+						break;
+					case 4: ch=27;
+				 }
+		}
+	} while(ch!=27);
+}
+
+
+}
+
+
+
+void checkUp:: displayData()
+{
+	int tX=6, tY=6;
+	//displaying the medical report
+	char list[7][50] = {"4.Sight:","5.Ears:","6.Teeth:","7.Throat:","8.Tonsils:","9.Nails:","10.Hygiene:"};
+	char *str;
+	gotoxy(tX+3,3);
+	cout<<"Date of exa\mination "<<date<<"-"<<month<<"-"<<year<<"\n";
+	box(5,5,31,16);
+	setNum(tX,tY++,"1.Admno: ",admNo);
+	setNum(tX,tY++,"2.Height: ",height);
+	setNum(tX,tY++,"3.Weight: ",weight);
+	for(int i=0;i<7;i++)
+	{
+		str = list[i];
+		strcat(str,data[i]);
+		setText(tX,tY+i,str);
+	}
+}
+void checkUp:: inputData()
+{
+	init();
+	int tX=6, tY=6;
+	char list[7][50] = {"4.Sight:","5.Ears:","6.Teeth:","7.Throat:","8.Tonsils:","9.Nails:","10.Hygiene:"};
+	char str[50];
+	admNo = getNum(tX,tY++,"1.Admno: ",WHITE);
+	height = getNum(tX,tY++,"2.Height: ",WHITE);
+	weight = getNum(tX,tY++,"3.Weight: ",WHITE);
+	for(int i=0;i<7;i++)
+	{
+		getText(tX,tY+i,list[i],str,WHITE);
+		strcpy(data[i],str);
+	}
+	curDate(date,month,year);
+	init();
+}
+void MC_addRecord()
+{
+	fstream f1;
+	char ch;
+	f1.open("checkup.dat",ios::app|ios::binary);
+	if(!f1)
+	{
+		console("ERROR");
+		getch();
+		return;
+	}
+	while(1)
+	{
+		c.inputData();
+		f1.write((char*)&c,sizeof(c));
+		init();
+		setText(5,5,"Press N to stop entering data and ",WHITE);
+		setText(5,6,"any other key to continue entering data",WHITE);
+		window(5,7,10,7);
+		cin>>ch;
+		if(ch=='n'|| ch=='N')
+			break;
+	}
+		f1.close();
+}
+
+void MC_searchRecord(long admn)
+{
+	init();
+	fstream f1,f2;
+	int f=0;//flag
+	f1.open("checkup.dat",ios::in|ios::binary);
+	f2.open("student.dat",ios::in|ios::binary);
+	if(!f1 || !f2)
+	{
+		console("ERROR");
+		getch();
+		exit(0);
+	}
+	while(!f2.eof())
+	{
+		f2.read((char*)&s,sizeof(s));
+		if(f2.eof())
+			break;
+		if(s.getAdmno()==admn)
+		{
+			box(44,5,76,14);
+			s.displayData(45);
+			++f;
+		}
+	}
+	while(!f1.eof())
+	{
+		f1.read((char*)&c,sizeof(c));
+		if(f1.eof())
+			break;
+		if(c.getAdmno()==admn)
+		{
+			box(5,5,25,14);
+			c.displayData();
+			getch();
+		}
+	}
+
+	f1.close();
+	f2.close();
 }
