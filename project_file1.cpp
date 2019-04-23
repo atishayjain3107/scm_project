@@ -480,6 +480,7 @@ void SD_deleteRecord()
 
 		else
 		{
+	
 			f2.write((char*)&s,sizeof(s));
 		}
 	}
@@ -493,3 +494,31 @@ void SD_deleteRecord()
 		console("NotFound!");
 	getch();
 }
+
+//search a student by admn
+void SD_searchRecord()
+{
+	clear();
+	fstream f;
+	int admn;
+	f.open("student.dat",ios::in|ios::binary);
+	if(!f)
+	{
+		console("ERROR");
+		getch();
+		return;
+	}
+	admn = getNum(8,8,"Admno -> ");
+	while(!f.eof())
+	{
+		f.read((char*)&s, sizeof(s));
+		if(f.eof()) break;
+		if(s.getAdmno() == admn)
+		{
+			s.displayData();
+			getch();
+		}
+	}
+	f.close();
+}
+
